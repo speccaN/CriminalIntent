@@ -17,14 +17,17 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CrimeListFragment extends Fragment {
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    private static final String ARG_CRIME_ID = "crimeId";
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
     private boolean mSubtitleVisible;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
