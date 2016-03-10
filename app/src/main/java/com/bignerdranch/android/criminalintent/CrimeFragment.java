@@ -23,14 +23,18 @@ public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "dialogDate";
+    private static final String DIALOG_TIME = "dialogTime";
 
     private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_TIME = 0;
 
     SimpleDateFormat mDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy");
+    SimpleDateFormat mTimeFormat = new SimpleDateFormat("kk:mm:ss");
 
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
+    private Button mTimeButton;
     private CheckBox mSolvedCheckBox;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -86,6 +90,21 @@ public class CrimeFragment extends Fragment {
                 }
         });
 
+        mTimeButton = (Button)v.findViewById(R.id.crime_time);
+        mTimeButton.setText(mTimeFormat.format(mCrime.getDate()));
+        mTimeButton.setEnabled(false);
+        //Code for time button commented out. Commenting code out is bad, but this is just temporary
+/*        .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                TimePickerFragment dialog = TimePickerFragment
+                        .newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialog.show(manager, DIALOG_TIME);
+            }
+        });*/
+
         mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -110,6 +129,6 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setText(mDateFormat.format(mCrime.getDate()));
     }
 }
