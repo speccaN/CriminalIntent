@@ -12,6 +12,9 @@
     <string name="time_picker_title">Time of Crime</string>
     <string name="delete_crime">Delete</string>
     <string name="empty_crime_list_message">There are no crimes</string>
+    <string name="delete_ok_button">Delete</string>
+    <string name="delete_cancel_button">Cancel</string>
+    <string name="delete_message">Are you sure you want to delete this Crime?</string>
 
     <plurals name="subtitle_plural">
         <item quantity="one">%1$s crime</item>
