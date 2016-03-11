@@ -31,7 +31,6 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
     private boolean mSubtitleVisible;
     private Button mNewCrimeButton;
-    //private CrimeLab mCrimeLab;
 
 
     @Override
