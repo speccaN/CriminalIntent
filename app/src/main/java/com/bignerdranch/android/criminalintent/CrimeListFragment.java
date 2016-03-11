@@ -12,21 +12,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.UUID;
 
 public class CrimeListFragment extends Fragment {
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     private static final String ARG_CRIME_ID = "crimeId";
+    private final CrimeLab mCrimeLab = CrimeLab.get(getActivity());
 
     private RecyclerView mCrimeRecyclerView;
+    private RelativeLayout mCrimeEmptyView;
     private CrimeAdapter mAdapter;
     private boolean mSubtitleVisible;
+    private Button mNewCrimeButton;
+    //private CrimeLab mCrimeLab;
 
 
     @Override
@@ -43,12 +48,29 @@ public class CrimeListFragment extends Fragment {
                 .findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        mCrimeEmptyView = (RelativeLayout) view.findViewById(R.id.empty_crime_list_display);
+        mNewCrimeButton = (Button) view.findViewById(R.id.new_crime_button);
+        mNewCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewCrime();
+            }
+        });
+
+
         if (savedInstanceState != null)
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
 
         updateUI();
 
         return view;
+    }
+
+    private void createNewCrime() {
+        Crime crime = new Crime();
+        mCrimeLab.addCrime(crime);
+        Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+        startActivity(intent);
     }
 
     @Override
@@ -80,7 +102,7 @@ public class CrimeListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
+                mCrimeLab.addCrime(crime);
                 Intent intent = CrimePagerActivity
                         .newIntent(getActivity(), crime.getId());
                 startActivity(intent);
@@ -96,8 +118,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateSubtitle() {
-        CrimeLab crimeLab = CrimeLab.get(getActivity());
-        int crimeCount = crimeLab.getCrimes().size();
+        int crimeCount = mCrimeLab.getCrimes().size();
         String subtitle = getResources()
                 .getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
 
@@ -109,8 +130,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateUI() {
-        CrimeLab crimeLab = CrimeLab.get(getActivity());
-        List<Crime> crimes = crimeLab.getCrimes();
+        List<Crime> crimes = mCrimeLab.getCrimes();
 
         if (mAdapter == null) {
             mAdapter= new CrimeAdapter(crimes);
@@ -121,6 +141,15 @@ public class CrimeListFragment extends Fragment {
 
         mAdapter = new CrimeAdapter(crimes);
         mCrimeRecyclerView.setAdapter(mAdapter);
+
+        if (crimes.isEmpty()) {
+            mCrimeRecyclerView.setVisibility(View.GONE);
+            mCrimeEmptyView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mCrimeRecyclerView.setVisibility(View.VISIBLE);
+            mCrimeEmptyView.setVisibility(View.GONE);
+        }
 
         updateSubtitle();
     }
@@ -178,9 +207,9 @@ public class CrimeListFragment extends Fragment {
         @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View view = layoutInflater
-                    .inflate(R.layout.list_item_crime, parent, false);
-            return new CrimeHolder(view);
+                View view = layoutInflater
+                        .inflate(R.layout.list_item_crime, parent, false);
+                return new CrimeHolder(view);
         }
 
         @Override

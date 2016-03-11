@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/crime_recycler_view"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
-</android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+                  android:id="@+id/crime_recycler_view"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+                android:id="@+id/empty_crime_list_display"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/empty_crime_list_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_crime_list_message"
+            android:textSize="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"/>
+
+        <Button
+            android:id="@+id/new_crime_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_crime"
+            android:layout_below="@+id/empty_crime_list_text"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+</FrameLayout>

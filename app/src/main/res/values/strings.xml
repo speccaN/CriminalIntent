@@ -11,6 +11,7 @@
     <string name="subtitle_format">%1$s crimes</string>
     <string name="time_picker_title">Time of Crime</string>
     <string name="delete_crime">Delete</string>
+    <string name="empty_crime_list_message">There are no crimes</string>
 
     <plurals name="subtitle_plural">
         <item quantity="one">%1$s crime</item>
