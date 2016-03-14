@@ -18,13 +18,15 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
-    private static final String ARG_CRIME_ID = "crimeId";
     private final CrimeLab mCrimeLab = CrimeLab.get(getActivity());
+
+    SimpleDateFormat mDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy. kk:mm");
 
     private RecyclerView mCrimeRecyclerView;
     private RelativeLayout mCrimeEmptyView;
@@ -184,7 +186,7 @@ public class CrimeListFragment extends Fragment {
         public void bindCrime(Crime crime){
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            mDateTextView.setText(mDateFormat.format(mCrime.getDate()));
             mSolvedCheckBox.setChecked(mCrime.isSolved());
         }
 

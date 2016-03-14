@@ -22,6 +22,13 @@
         android:text="@string/crime_details_label"
         style="?android:listSeparatorTextViewStyle"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_date_label"
+        android:textSize="16dp"
+        android:layout_gravity="center_horizontal"/>
+
     <Button
         android:id="@+id/crime_date"
         android:textAllCaps="false"
@@ -29,6 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_time_label"
+        android:textSize="16dp"
+        android:layout_gravity="center_horizontal"/>
 
     <Button
         android:id="@+id/crime_time"
