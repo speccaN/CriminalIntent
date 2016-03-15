@@ -24,7 +24,6 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
-    private final CrimeLab mCrimeLab = CrimeLab.get(getActivity());
 
     SimpleDateFormat mDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy. kk:mm");
 
@@ -69,7 +68,7 @@ public class CrimeListFragment extends Fragment {
 
     private void createNewCrime() {
         Crime crime = new Crime();
-        mCrimeLab.addCrime(crime);
+        CrimeLab.get(getActivity()).addCrime(crime);
         Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
         startActivity(intent);
     }
@@ -103,7 +102,7 @@ public class CrimeListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime();
-                mCrimeLab.addCrime(crime);
+                CrimeLab.get(getActivity()).addCrime(crime);
                 Intent intent = CrimePagerActivity
                         .newIntent(getActivity(), crime.getId());
                 startActivity(intent);
@@ -119,7 +118,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateSubtitle() {
-        int crimeCount = mCrimeLab.getCrimes().size();
+        int crimeCount = CrimeLab.get(getActivity()).getCrimes().size();
         String subtitle = getResources()
                 .getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
 
@@ -131,12 +130,13 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateUI() {
-        List<Crime> crimes = mCrimeLab.getCrimes();
+        List<Crime> crimes = CrimeLab.get(getActivity()).getCrimes();
 
         if (mAdapter == null) {
             mAdapter= new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -174,11 +174,11 @@ public class CrimeListFragment extends Fragment {
             mSolvedCheckBox = (CheckBox)
                     itemView.findViewById(R.id.list_item_crime_solved_check_box);
 
-
             mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mCrime.setSolved(isChecked);
+                    CrimeLab.get(getActivity()).updateCrime(mCrime);
                 }
             });
         }
@@ -222,6 +222,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mCrimes.size();
+        }
+
+        public void setCrimes(List<Crime> crimes) {
+            mCrimes = crimes;
         }
     }
 }
