@@ -78,25 +78,24 @@ public class CrimeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_delete_crime:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.delete_message);
-
-                builder.setPositiveButton(R.string.delete_ok_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //User clicked OK button
-                        mCrimeLab.deleteCrime(mCrime);
-                        getActivity().finish();
-                    }
-                });
-                builder.setNegativeButton(R.string.delete_cancel_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //User clicked CANCEL button
-                        //Do nothing
-                    }
-                });
-                builder.show();
+                AlertDialog builder = new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.delete_message)
+                        .setPositiveButton(R.string.delete_ok_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // User clicked OK button
+                                mCrimeLab.deleteCrime(mCrime);
+                                getActivity().finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.delete_cancel_button, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // User clicked Cancel
+                                // Do nothing
+                            }
+                        })
+                        .show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
