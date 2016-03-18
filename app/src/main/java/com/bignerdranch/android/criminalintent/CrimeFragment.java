@@ -39,12 +39,12 @@ public class CrimeFragment extends Fragment {
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME = 1;
-    private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_CONTACT = 2;
     private static final int REQUEST_PERMISSION = 3;
     private final CrimeLab mCrimeLab = CrimeLab.get(getActivity());
 
-    SimpleDateFormat mDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy");
-    SimpleDateFormat mTimeFormat = new SimpleDateFormat("kk:mm");
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("EEEE, MMM dd, yyyy");
+    private SimpleDateFormat mTimeFormat = new SimpleDateFormat("kk:mm");
 
     private Crime mCrime;
     private EditText mTitleField;
@@ -53,6 +53,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private Button mReportButton;
     private Button mSuspectButton;
+    private Button mPhoneButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -117,6 +118,13 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
+
+        // Do a Permission Check to see whether we can read contacts
+        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS);
+
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            CrimeFragment.this.requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_PERMISSION);
+        }
 
         mTitleField = (EditText)v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
@@ -195,6 +203,17 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        final Intent callContact = new Intent(Intent.ACTION_DIAL);
+        mPhoneButton = (Button) v.findViewById(R.id.crime_phone);
+        mPhoneButton.setEnabled(false); // Set Phone Button to Disabled initially because there is no Number attached
+        mPhoneButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                callContact.setData(
+                        Uri.parse("tel:" + mCrime.getPhone()));
+                startActivity(callContact);
+            }
+        });
+
         if (mCrime.getSuspect() != null)
             mSuspectButton.setText(mCrime.getSuspect());
 
@@ -202,6 +221,11 @@ public class CrimeFragment extends Fragment {
         if (packageManager.resolveActivity(pickContact,
                 PackageManager.MATCH_DEFAULT_ONLY) == null){
             mSuspectButton.setEnabled(false);
+        }
+
+        if (mCrime.getPhone() != null) { // If selected Crime has a phone number attached to it
+            mPhoneButton.setEnabled(true); // Enable the Call Button
+            mPhoneButton.setText(mCrime.getPhone()); // Set the text of the Call Button to the Phone Number
         }
 
         return v;
@@ -217,6 +241,7 @@ public class CrimeFragment extends Fragment {
             // values for.
             String[] queryFields = new String[] {
                     ContactsContract.Contacts.DISPLAY_NAME,
+                    ContactsContract.Contacts._ID
             };
             // Perform your query - the contactUri is like a "where"
             // clause here
@@ -230,11 +255,25 @@ public class CrimeFragment extends Fragment {
                 }
 
                 //Pull out the first column of the first row of data -
-                // that is your suspect's name.
+                // that is your suspects name.
                 c.moveToFirst();
                 String suspect = c.getString(0);
                 mCrime.setSuspect(suspect);
                 mSuspectButton.setText(suspect);
+
+                // Second column is the suspect _ID
+                String id = c.getString(1);
+
+                // Using the _ID to get suspects phone number
+                c = getActivity().getContentResolver().query( // Uri, projection, selection, selectionArgs, sortOrder
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
+
+
+                c.moveToFirst();
+                mCrime.setPhone(c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+                mPhoneButton.setText(mCrime.getPhone());
+                mPhoneButton.setEnabled(true);
             } finally {
                 c.close();
             }
@@ -249,7 +288,10 @@ public class CrimeFragment extends Fragment {
                 break;
             case REQUEST_TIME:
                 Date time = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-                mCrime.setDate(time);
+                if (time == null)
+                    return;
+                else
+                    mCrime.setDate(time);
                 updateTime();
                 break;
         }
