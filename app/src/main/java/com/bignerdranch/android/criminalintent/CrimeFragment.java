@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +42,7 @@ public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "dialogDate";
     private static final String DIALOG_TIME = "dialogTime";
+    private static final String DIALOG_IMAGE = "dialogImage";
 
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME = 1;
@@ -80,6 +82,8 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = mCrimeLab.getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        String TAG = mPhotoFile.toString();
+        Log.d(TAG, "PHOTOFILE");
     }
 
     @Override
@@ -125,7 +129,7 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
 
@@ -239,7 +243,6 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoButton = (ImageButton) v.findViewById(R.id.crime_camera);
-        mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         boolean canTakePhoto = mPhotoFile != null &&
@@ -254,6 +257,18 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivityForResult(captureImage, REQUEST_PHOTO);
+            }
+        });
+
+        mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                ImageFragment dialog = ImageFragment
+                        .newInstance(mPhotoFile.getPath());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_PHOTO);
+                dialog.show(manager, DIALOG_IMAGE);
             }
         });
 
