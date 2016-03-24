@@ -28,6 +28,7 @@ public class PictureUtils {
         options = new BitmapFactory.Options();
         options.inSampleSize = inSampleSize;
 
+        options.inJustDecodeBounds = false;
         // Read in and create final Bitmap
         return BitmapFactory.decodeFile(path, options);
     }

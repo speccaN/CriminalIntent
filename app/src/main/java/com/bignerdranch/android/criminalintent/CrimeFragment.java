@@ -25,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -272,7 +273,19 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        updatePhotoView();
+        // Add a ViewTreeObserver to mPhotoView.
+        // observer (mPhotoView) then gets a GlobalLayoutListener attached to it which fires
+        // on layout change (?)
+        // Then mPhotoView's width and height can be accessed in updatePhotoView
+        // which was not possible earlier because it was outside the method and its width and height
+        // have not been set yet
+        ViewTreeObserver observer = mPhotoView.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                updatePhotoView();
+            }
+        });
 
         return v;
     }
@@ -382,7 +395,7 @@ public class CrimeFragment extends Fragment {
             mPhotoView.setImageDrawable(null);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
+                    mPhotoFile.getPath(), mPhotoView.getWidth(), mPhotoView.getHeight());
             mPhotoView.setImageBitmap(bitmap);
         }
     }
